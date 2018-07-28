@@ -8,6 +8,7 @@
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "rm -rf dist && node build/build.js",
+    "build-2": "node build/build.js",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
@@ -44,7 +45,7 @@
     "http-proxy-middleware": "^0.17.3",
     "less": "^3.0.1",
     "less-loader": "^4.1.0",
-    "mpvue-loader": "^1.0.11",
+    "mpvue-loader": "1.0.11",
     "mpvue-template-compiler": "^1.0.8",
     "mpvue-webpack-target": "^1.0.0",
     "optimize-css-assets-webpack-plugin": "^2.0.0",
