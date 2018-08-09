@@ -12,7 +12,7 @@ export default new Vuex.Store({
      * @param  {} {commit}
      * 获取用户公开信息
      */
-    async getUserInfo ({ commit }) {
+    async getUserInfo({ commit }) {
       const { userInfo } = await getUserInfo({
         withCredenitals: false
       })
@@ -26,7 +26,7 @@ export default new Vuex.Store({
      * @param  { String } userId 用户ID
      * 检查用户是否已经存在于某一拼单中
      */
-    async checkInBill ({ commit }, userId) {
+    async checkInBill({ commit }, userId) {
       const res = await request({
         method: 'post',
         url: `${apiDomain}/inBill`,
@@ -47,7 +47,7 @@ export default new Vuex.Store({
      * @param  { String } billId 拼单ID
      * 创建拼单
      */
-    async createBill ({ commit }, { userId, name, avatar, time, from, to, billId }) {
+    async createBill({ commit }, { userId, name, avatar, time, from, to, billId }) {
       const res = await request({
         method: 'post',
         url: `${apiDomain}/create`,
@@ -68,7 +68,7 @@ export default new Vuex.Store({
      * @param  { String } billId 拼单ID
      * 获取拼单信息
      */
-    async getBillInfo ({ commit }, billId) {
+    async getBillInfo({ commit }, billId) {
       const res = await request({
         method: 'post',
         url: `${apiDomain}/getBill`,
@@ -86,7 +86,7 @@ export default new Vuex.Store({
      * @param  { String } billId 拼单ID
      * 参加拼单
      */
-    async joinBill ({ commit }, { userId, name, avatar, billId }) {
+    async joinBill({ commit }, { userId, name, avatar, billId }) {
       const res = await request({
         method: 'post',
         url: `${apiDomain}/join`,
@@ -105,7 +105,7 @@ export default new Vuex.Store({
      * @param  { String } billId 拼单ID
      * 退出拼单
      */
-    async leaveBill ({ commit }, { userId, billId }) {
+    async leaveBill({ commit }, { userId, billId }) {
       const res = await request({
         method: 'post',
         url: `${apiDomain}/leave`,
@@ -122,7 +122,7 @@ export default new Vuex.Store({
      * @param  { String } billId   拼单ID
      * 参加拼单
      */
-    async uploadImg ({ commit }, { filePath, billId }) {
+    async uploadImg({ commit }, { filePath, billId }) {
       const res = await uploadFile({
         url: `${apiDomain}/uploadImg`,
         header: {

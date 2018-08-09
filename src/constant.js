@@ -1,4 +1,4 @@
 // const apiDomain = 'http://localhost:5000'
-const apiDomain = 'http://106.12.19.105:5000'
+const apiDomain = 'https://www.yujunhua.top'
 
 export default apiDomain
