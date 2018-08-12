@@ -72,41 +72,26 @@ export default {
   },
   async onShow() {
     this.confirm = false;
-    wx
-      .getStorage("is-first")
-      .then(res => {
-        // 非第一次使用，不展示说明
-      })
-      .catch(e => {
-        // 是第一次使用，展示说明并设置storage
-        this.showDialog = true;
-        wx.setStorage("is-first", "true");
-      });
-    // 进来的时候先获取用户信息
-    // 然后用userId去判断是否已经处于拼单
-    // 若是，则跳转到对应拼单billId的拼单详情页
-    // 若否，则允许新建拼单
-    this.userInfo = await this.$store.dispatch("getUserInfo");
-    const inBill = await this.$store.dispatch(
-      "checkInBill",
-      this.userInfo.userId
-    );
-    alert("hello test");
-    console.log("inbill ignored");
-    if (inBill.inBill) {
-      console.log("inbill ignored");
-      wx.redirectTo(
-        `../join/main?billId=${inBill.inBill.billId}&fromIndex=true`
-      );
-    }
+    // wx
+    //   .getStorage("is-first")
+    //   .then(res => {
+    //     // 非第一次使用，不展示说明
+    //   })
+    //   .catch(e => {
+    //     // 是第一次使用，展示说明并设置storage
+    //     this.showDialog = true;
+    //     wx.setStorage("is-first", "true");
+    //   });
+    
+      this.initPageWithUserInfo();
   },
   onShareAppMessage(result) {
-    let title = "一起拼车";
+    let title = "工作餐拼单";
     let path = "/pages/index";
     console.log("aftershare");
     if (result.from === "button") {
       this.billId = "billId-" + new Date().getTime();
-      title = "我发起了一个拼车";
+      title = "我发起了工作餐拼单";
       path = `pages/join/main?billId=${this.billId}`;
     }
     return {
@@ -132,6 +117,13 @@ export default {
       }
     };
   },
+  watch: {
+    showDialog(val) {
+      if(!val) {
+        this.initPageWithUserInfo()
+      }
+    }
+  },
   methods: {
     onTimeChanged(e) {
       this.time = e.target.value;
@@ -144,6 +136,29 @@ export default {
       if (!this.confirm) {
         const res = await wx.chooseImage();
         this.imgSrc = res.tempFilePaths[0];
+      }
+    },
+    async initPageWithUserInfo() {
+      // 进来的时候先获取用户信息
+      // 然后用userId去判断是否已经处于拼单
+      // 若是，则跳转到对应拼单billId的拼单详情页
+      // 若否，则允许新建拼单   
+      this.userInfo = await this.$store.dispatch("getUserInfo");
+      if(!this.userInfo) {
+        this.showDialog = true;
+      } else {
+        console.log('get userinfo success');
+        const inBill = await this.$store.dispatch(
+          "checkInBill",
+          this.userInfo.userId
+        );
+        console.log("inbill ignored");
+        if (inBill.inBill) {
+          console.log("inbill ignored");
+          wx.redirectTo(
+            `../join/main?billId=${inBill.inBill.billId}&fromIndex=true`
+          );
+        }
       }
     },
     submit() {

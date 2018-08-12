@@ -27,6 +27,10 @@
     <button class="member-leave" v-if="inThisBill" @click="leaveBill">退出拼车单</button>
 
     <toast :timeout="5000" v-model="toastContent"></toast>
+    <button class="input-box-btn" v-if="confirm" open-type="share">分享到群</button>
+    <t-dialog
+      :show.sync="showDialog"
+      ></t-dialog>
   </div>
 </template>
 
@@ -44,7 +48,8 @@ export default {
       avatarHolder: require('static/imgs/avatar.png'),
       inThisBill: false,
       imgSrc: '',
-      toastContent: ''
+      toastContent: '',
+      showDialog: false
     }
   },
   components: {
@@ -61,6 +66,7 @@ export default {
     this.billId = options.billId
     // 2. 其次会请求一次userInfo，获取userId
     this.userInfo = await this.$store.dispatch('getUserInfo')
+    this.initPageWithUserInfo();
     // 3. 然后拿这个userId去checkInBill
     const inBill = await this.$store.dispatch('checkInBill', this.userInfo.userId)
     // 4. 如果已经处于拼单，那么就会有一个billId
@@ -76,6 +82,13 @@ export default {
   async onPullDownRefresh () {
     await this.getBillInfo()
     await wx.stopPullDownRefresh()
+  },
+  watch: {
+    showDialog(val) {
+      if(!val) {
+        this.initPageWithUserInfo()
+      }
+    }
   },
   methods: {
     async getBillInfo () {
@@ -108,7 +121,30 @@ export default {
       })
       // 退出拼单后直接回到首页
       wx.redirectTo('../index/main')
-    }
+    },
+    async initPageWithUserInfo() {
+      // 进来的时候先获取用户信息
+      // 然后用userId去判断是否已经处于拼单
+      // 若是，则跳转到对应拼单billId的拼单详情页
+      // 若否，则允许新建拼单   
+      this.userInfo = await this.$store.dispatch("getUserInfo");
+      if(!this.userInfo) {
+        this.showDialog = true;
+      } else {
+        console.log('get userinfo success');
+        const inBill = await this.$store.dispatch(
+          "checkInBill",
+          this.userInfo.userId
+        );
+        console.log("inbill ignored");
+        if (inBill.inBill) {
+          console.log("inbill ignored");
+          wx.redirectTo(
+            `../join/main?billId=${inBill.inBill.billId}&fromIndex=true`
+          );
+        }
+      }
+    },
   }
 }
 </script>

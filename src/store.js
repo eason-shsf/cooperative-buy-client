@@ -13,13 +13,18 @@ export default new Vuex.Store({
      * 获取用户公开信息
      */
     async getUserInfo({ commit }) {
-      const { userInfo } = await getUserInfo({
-        withCredenitals: false
-      })
-      userInfo.avatar = userInfo.avatarUrl
-      userInfo.name = userInfo.nickName
-      userInfo.userId = encodeURIComponent(userInfo.nickName + userInfo.city + userInfo.gender + userInfo.country)
-      return userInfo
+      try {
+        const { userInfo } = await getUserInfo({
+          withCredenitals: false
+        })
+        userInfo.avatar = userInfo.avatarUrl
+        userInfo.name = userInfo.nickName
+        userInfo.userId = encodeURIComponent(userInfo.nickName + userInfo.city + userInfo.gender + userInfo.country)
+        return userInfo
+      } catch(e) {
+        console.log(e)
+      }
+      
     },
     /**
      * @param  {} {commit}
