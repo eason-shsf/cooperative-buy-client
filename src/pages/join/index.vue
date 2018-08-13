@@ -12,7 +12,7 @@
     </section>
 
     <section class="member-detail">
-      <h3 class="member-detail-title">出发地点</h3>
+      <h3 class="member-detail-title">出发地点 {{showDialog}}</h3>
       <p class="member-detail-desc">{{billInfo.from}}</p>
       <h3 class="member-detail-title">目的地点</h3>
       <p class="member-detail-desc">{{billInfo.to}}</p>
@@ -39,6 +39,8 @@ import wx from 'utils/wx'
 import apiDomain from '@/constant'
 import toast from 'comp/toast'
 
+import dialog from "comp/dialog-index";
+
 export default {
   data () {
     return {
@@ -53,7 +55,8 @@ export default {
     }
   },
   components: {
-    toast
+    toast,
+    "t-dialog": dialog
   },
   async onLoad (options) {
     console.log(`url携带的参数为: ${JSON.stringify(options)}`)
@@ -65,19 +68,9 @@ export default {
     // 1. 首先会获取从url里面带来的billId
     this.billId = options.billId
     // 2. 其次会请求一次userInfo，获取userId
-    this.userInfo = await this.$store.dispatch('getUserInfo')
+    // this.userInfo = await this.$store.dispatch('getUserInfo')
+    debugger;
     this.initPageWithUserInfo();
-    // 3. 然后拿这个userId去checkInBill
-    const inBill = await this.$store.dispatch('checkInBill', this.userInfo.userId)
-    // 4. 如果已经处于拼单，那么就会有一个billId
-    if (inBill.inBill) {
-      this.billId = inBill.inBill.billId
-    }
-    // 5. 如果没有处于拼单，那么将请求当前billId的拼单
-    // 6. 如果billId都无效，则redirect到首页，否则检查当前用户是否处于该拼单当中
-    await wx.startPullDownRefresh()
-    await this.getBillInfo()
-    await wx.stopPullDownRefresh()
   },
   async onPullDownRefresh () {
     await this.getBillInfo()
@@ -105,6 +98,7 @@ export default {
       return this.billInfo
     },
     async joinBill () {
+      debugger;
       await this.$store.dispatch('joinBill', {
         userId: this.userInfo.userId,
         billId: this.billId,
@@ -128,21 +122,21 @@ export default {
       // 若是，则跳转到对应拼单billId的拼单详情页
       // 若否，则允许新建拼单   
       this.userInfo = await this.$store.dispatch("getUserInfo");
-      if(!this.userInfo) {
+      debugger;
+      if(!this.userInfo || !userInfo.name || !userInfo.userId) {debugger;
         this.showDialog = true;
       } else {
-        console.log('get userinfo success');
-        const inBill = await this.$store.dispatch(
-          "checkInBill",
-          this.userInfo.userId
-        );
-        console.log("inbill ignored");
+        // 3. 然后拿这个userId去checkInBill
+        const inBill = await this.$store.dispatch('checkInBill', this.userInfo.userId)
+        // 4. 如果已经处于拼单，那么就会有一个billId
         if (inBill.inBill) {
-          console.log("inbill ignored");
-          wx.redirectTo(
-            `../join/main?billId=${inBill.inBill.billId}&fromIndex=true`
-          );
+          this.billId = inBill.inBill.billId
         }
+        // 5. 如果没有处于拼单，那么将请求当前billId的拼单
+        // 6. 如果billId都无效，则redirect到首页，否则检查当前用户是否处于该拼单当中
+        await wx.startPullDownRefresh()
+        await this.getBillInfo()
+        await wx.stopPullDownRefresh()
       }
     },
   }
